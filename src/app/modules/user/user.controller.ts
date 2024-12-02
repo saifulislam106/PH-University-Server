@@ -6,14 +6,10 @@ import httpStatus from "http-status";
 
 const createStudent = async (req: Request, res: Response , next :NextFunction) => {
     try {
+      console.log(req.body);
       const {password, student: studentData } = req.body;
       const result = await userService.createStudentIntoDB(password, studentData);
   
-      // res.status(200).json({
-      //   success: true,
-      //   message: 'Student is created succesfully',
-      //   data: result,
-      // });
       sendResponse(res , {
         statusCode : httpStatus.OK,
         success: true,

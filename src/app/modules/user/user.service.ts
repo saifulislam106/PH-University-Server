@@ -5,25 +5,23 @@ import { TUser } from './user.interface';
 import { User } from './user.model';
 
 const createStudentIntoDB = async (password: string, studentData: TStudent) => {
-    // create a user object
-    const userData : Partial<TUser>= {};
+  // create a user object
+  const userData: Partial<TUser> = {};
 
-    userData.password = password || (config.default_pass as string);
-    userData.role = "student";
-    userData.id = "20301001";
+  userData.password = password || (config.default_pass as string);
+  userData.role = 'student';
+  userData.id = studentData.id;
 
-    // create a user 
+  // create a user
   const newUser = await User.create(userData);
-  
-//   create a student 
-    if(Object.keys(newUser).length){
-       
-        studentData.id = newUser.id;
-        studentData.user = newUser._id;  //reference id 
-        const newStudent = await Student.create(studentData);
-        return newStudent;
-    }
-  
+ console.log(newUser);
+  //   create a student
+  if (Object.keys(newUser).length) {
+    studentData.id = newUser.id;
+    studentData.user = newUser._id; //reference id
+    const newStudent = await Student.create(studentData);
+    return newStudent;
+  }
 };
 
 export const userService = {
