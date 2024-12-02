@@ -14,7 +14,7 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
 
   // create a user
   const newUser = await User.create(userData);
- console.log(newUser);
+//  console.log(newUser);
   //   create a student
   if (Object.keys(newUser).length) {
     studentData.id = newUser.id;
