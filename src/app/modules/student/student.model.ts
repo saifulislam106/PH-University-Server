@@ -7,6 +7,7 @@ import {
   TUserName,
 } from './student.interface';
 
+
 const userNameSchema = new Schema<TUserName>({
   firstName: {
     type: String,
@@ -124,6 +125,10 @@ const studentSchema = new Schema<TStudent, StudentModel>(
     permanentAddress: {
       type: String,
       required: [true, 'Permanent address is required'],
+    },
+    admissionSemester:{
+      type:Schema.Types.ObjectId,
+      ref: "AcademicSemester"
     },
     guardian: {
       type: guardianSchema,

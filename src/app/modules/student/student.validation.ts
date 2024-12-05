@@ -41,6 +41,7 @@ export const createStudentValidationSchema = z.object({
       bloogGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
       presentAddress: z.string(),
       permanentAddress: z.string(),
+      admissionSemester: z.string(),
       guardian: guardianSchema,
       localGuardian: localGuardianSchema,
       profileImg: z.string(),
