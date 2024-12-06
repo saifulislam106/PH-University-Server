@@ -1,3 +1,4 @@
+
 import { Schema, model } from 'mongoose';
 import {
   StudentModel,
@@ -129,6 +130,10 @@ const studentSchema = new Schema<TStudent, StudentModel>(
     admissionSemester:{
       type:Schema.Types.ObjectId,
       ref: "AcademicSemester"
+    },
+    academicDepartment:{
+      type:Schema.Types.ObjectId,
+      ref: "AcademicDepartment"
     },
     guardian: {
       type: guardianSchema,
