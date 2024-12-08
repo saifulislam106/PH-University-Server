@@ -14,7 +14,7 @@ app.use(cors());
 app.use('/api/v1' ,router )
 
 
-const result = (req: Request, res: Response) => {
+const result = async(req: Request, res: Response) => {
   res.send("server is runnig on browser");
 };
 app.get('/', result);

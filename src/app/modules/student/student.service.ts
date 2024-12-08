@@ -5,8 +5,21 @@ import { User } from '../user/user.model';
 import { TStudent } from './student.interface';
 import { Student } from './student.model';
 
-const getAllStudentsFromDB = async () => {
-  const result = await Student.find()
+const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
+  let searchTerm = ''; // SET DEFAULT VALUE
+
+  if (query?.searchTerm) {
+    searchTerm = query.searchTerm as string;
+  }
+
+  // { email: { $regex : query.searchTerm , $options: i}}
+  // { 'name.firstName': { $regex : query.searchTerm , $options: i}}
+
+  const result = await Student.find({
+    $or: ['email', 'name.firstName'].map((field) => ({
+      [field]: { $regex: searchTerm, $options: 'i' },
+    })),
+  })
     .populate('admissionSemester')
     .populate({
       path: 'academicDepartment',
@@ -14,7 +27,6 @@ const getAllStudentsFromDB = async () => {
         path: 'academicFaculty',
       },
     });
-
   return result;
 };
 
