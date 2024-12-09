@@ -4,67 +4,27 @@ import AppError from '../../errors/AppError';
 import { User } from '../user/user.model';
 import { TStudent } from './student.interface';
 import { Student } from './student.model';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   const studentSearchableFields = ['email', 'name.firstName'];
+  /*
 
- const queryObj = {...query};
-
-
-  let searchTerm = ''; // SET DEFAULT VALUE
-  if (query?.searchTerm) {
-    searchTerm = query.searchTerm as string;
-  }
-  // { email: { $regex : query.searchTerm , $options: i}}
-  // { 'name.firstName': { $regex : query.searchTerm , $options: i}}
-
-  const searchQuery =Student.find({
-    $or: studentSearchableFields.map((field) => ({
-      [field]: { $regex: searchTerm, $options: 'i' },
-    })),
-  })
-
-  // Filtering functionality 
-  const excludeFields = ['searchTerm' ,'sort' ,'limit']
-  excludeFields.forEach((el)=> delete queryObj[el])
-  console.log(query ,queryObj);
-
-  const filterQuery = searchQuery.find(queryObj)
-  .populate('admissionSemester')
-  .populate({
-    path: 'academicDepartment',
-    populate: {
-      path: 'academicFaculty',
-    },
-  })
-
-  // sorting 
-  let sort = '-createdAt'
-
-  if(query?.sort){
-    sort = query.sort as string
-  }
-
-  const querySorting = await filterQuery.sort(sort)
-
-  // limiting 
-  // let limit = 1
-
-  // if(query?.limit){
-  //   limit = query.limit
-  // }
-
-  // const queryLimit = await querySorting.(limit)
-
-
-  return querySorting
-};
-
-
-/*
- const queryObj = { ...query }; // copying req.query object so that we can mutate the copy object 
+  
+  const queryObj = { ...query }; // copying req.query object so that we can mutate the copy object 
    
- 
+  let searchTerm = '';   // SET DEFAULT VALUE 
+
+  // IF searchTerm  IS GIVEN SET IT
+  if (query?.searchTerm) {
+    searchTerm = query?.searchTerm as string; 
+  }
+
+  
+ // HOW OUR FORMAT SHOULD BE FOR PARTIAL MATCH  : 
+  // { email: { $regex : query.searchTerm , $options: i}}
+  // { presentAddress: { $regex : query.searchTerm , $options: i}}
+  // { 'name.firstName': { $regex : query.searchTerm , $options: i}}
 
   
   // WE ARE DYNAMICALLY DOING IT USING LOOP
@@ -103,8 +63,73 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
 
    const sortQuery = filterQuery.sort(sort);
 
-*/
 
+   // PAGINATION FUNCTIONALITY:
+
+   let page = 1; // SET DEFAULT VALUE FOR PAGE 
+   let limit = 1; // SET DEFAULT VALUE FOR LIMIT 
+   let skip = 0; // SET DEFAULT VALUE FOR SKIP
+
+
+  // IF limit IS GIVEN SET IT
+  
+  if (query.limit) {
+    limit = Number(query.limit);
+  }
+
+  // IF page IS GIVEN SET IT
+
+  if (query.page) {
+    page = Number(query.page);
+    skip = (page - 1) * limit;
+  }
+
+  const paginateQuery = sortQuery.skip(skip);
+
+  const limitQuery = paginateQuery.limit(limit);
+
+  
+  
+  // FIELDS LIMITING FUNCTIONALITY:
+
+  // HOW OUR FORMAT SHOULD BE FOR PARTIAL MATCH 
+
+  // fields: 'name,email'; // WE ARE ACCEPTING FROM REQUEST
+  // fields: 'name email'; // HOW IT SHOULD BE 
+
+  let fields = '-__v'; // SET DEFAULT VALUE
+
+  if (query.fields) {
+    fields = (query.fields as string).split(',').join(' ');
+
+  }
+
+  const fieldQuery = await limitQuery.select(fields);
+
+  return fieldQuery;
+  */
+
+  const studentQuery = new QueryBuilder(
+    Student.find()
+      .populate('admissionSemester')
+      .populate({
+        path: 'academicDepartment',
+        populate: {
+          path: 'academicFaculty',
+        },
+      }),
+    query,
+  )
+    .search(studentSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await studentQuery.queryModel;
+
+  return result;
+};
 
 const getSingleStudentFromDB = async (id: string) => {
   const result = await Student.findOne({ id })
