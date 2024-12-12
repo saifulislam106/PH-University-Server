@@ -1,16 +1,20 @@
+import { Types } from 'mongoose';
 
-import { Types } from "mongoose";
+export type TPreRequisiteCourses = {
+  course: Types.ObjectId;
+  isDeleted: boolean;
+};
 
-export type TpreRequisiteCourses={
-    courses:Types.ObjectId;
-    isDeleted:boolean
-}
+export type TCourse = {
+  title: string;
+  prefix: string;
+  code: number;
+  credits: number;
+  isDeleted?: boolean;
+  preRequisiteCourses: [TPreRequisiteCourses];
+};
 
-export type TCourse ={
-    title: string;
-    code:number;
-    prefix:string;
-    credit:number;
-    preRequisiteCourses:[TpreRequisiteCourses];
-    isDeleted?:boolean
-}
+export type TCourseFaculty = {
+  course: Types.ObjectId;
+  faculties: [Types.ObjectId];
+};
