@@ -9,8 +9,7 @@ import { OfferedCourseServices } from "./offeredCourse.service";
 
 
 const createOfferedCourse = catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const result = await OfferedCourseServices.createOfferedCourseIntoDB( id );
+    const result = await OfferedCourseServices.createOfferedCourseIntoDB( req.body );
   
     sendResponse(res, {
       statusCode: httpStatus.OK,
