@@ -11,6 +11,7 @@ import { Faculty } from '../faculty/faculty.model';
 import { hasTimeConflict } from './offeredCourse.utils';
 import { RegistrationStatus } from '../SemesterRegistration/semesterRegistration.constant';
 
+
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   const {
     academicDepartment,
@@ -176,9 +177,36 @@ const updateOfferedCourseIntoDB = async (
   return result;
 };
 
+const deleteOfferedCourseFromDB = async(id:string )=>{
+
+  const isOfferedCourseExists = await OfferedCourse.findById(id);
+
+  if (!isOfferedCourseExists) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Offered course not found !');
+  }
+
+
+  const semesterRegistration = isOfferedCourseExists.semesterRegistration;
+  
+  // Checking the status of the semester registration
+  const semesterRegistrationStatus =
+    await SemesterRegistration.findById(semesterRegistration);
+
+  if (semesterRegistrationStatus?.status !== 'UPCOMING') {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `You can not update this offered course as it is ${semesterRegistrationStatus?.status}`,
+    );
+  } 
+
+  const result = await OfferedCourse.findByIdAndDelete(id)
+  return result;
+}
+
 export const OfferedCourseServices = {
   createOfferedCourseIntoDB,
   getAllOfferedCourseFromDB,
   getSingleOfferedCourseFromDB,
   updateOfferedCourseIntoDB,
+  deleteOfferedCourseFromDB
 };
