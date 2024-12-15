@@ -13,10 +13,10 @@ router.post(
   OfferedCourseControllers.createOfferedCourse,
 );
 
-router.get('/:facultyId', OfferedCourseControllers.getSingleOfferedCourse);
+router.get('/:id', OfferedCourseControllers.getSingleOfferedCourse);
 
 router.patch(
-  '/:facultyId',
+  '/:id',
   validateRequest(
     OfferedCourseValidations.updateOfferedCourseValidationSchema
   ),
