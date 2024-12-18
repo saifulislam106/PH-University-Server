@@ -3,12 +3,12 @@ import  bcrypt  from 'bcrypt';
 
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { model, Schema } from 'mongoose';
-import { TUser } from './user.interface';
+import { TUser, UserModel } from './user.interface';
 import config from '../../config';
 
 
 
-export const userSchema = new Schema<TUser>(
+export const userSchema = new Schema<TUser , UserModel>(
   {
     id: {
       type: String,
@@ -57,4 +57,18 @@ userSchema.post('save', function (doc, next) {
   doc.password = '';
   next();
 });
-export const User = model<TUser>("User" , userSchema)
+
+// if cheqe user id exist with instance method or statics 
+userSchema.statics.isUserExistsByCustomId = async function (id: string) {
+  return await User.findOne({ id }).select('+password');
+};
+
+
+// if cheqe user id exist with instance method or statics 
+userSchema.statics.isPasswordMatched = async function (
+  plainTextPassword,
+  hashedPassword,
+) {
+  return await bcrypt.compare(plainTextPassword, hashedPassword);
+};
+export const User = model<TUser,UserModel>("User" , userSchema)
